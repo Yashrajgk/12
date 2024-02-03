@@ -48,7 +48,7 @@ exports.createBlogController = async (req, res) => {
             });
         }
 
-        const newBlog = new blogModel({ title, description, image });
+        const newBlog = new blogModel({ title, description, image, user });
         const session = await mongoose.startSession();
         session.startTransaction();
         await newBlog.save({ session });
@@ -124,7 +124,9 @@ exports.getBlogByIdController = async(req,res) => {
 //Delete blog
 exports.deleteBlogController = async(req,res) => {
     try {
-        await blogModel.findByIdAndDelete(req.params.id)
+        const blog = await blogModel.findByIdAndDelete(req.params.id).populate("user")
+        await blog.user.blogs.pull(blog) 
+        await blog.user.save(); 
         return res.status(200).send({
             success:true,
             message:'Blog Deleted!',

@@ -18,13 +18,7 @@ const blogSchema = new mongoose.Schema(
         type:mongoose.Types.ObjectId,
         ref:'User',
         require: [true, "password is required"],
-    },
-    blogs:[
-        {
-            type:mongoose.Types.ObjectId,
-            ref:'Blog',
-        }
-    ]  
+    }, 
 },
 { timestamps: true }
 );
