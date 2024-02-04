@@ -19,12 +19,15 @@ const Blogs = () => {
   },[])
   return (
     <div>
-      {blogs && blogs.map(blog => (
+      {blogs && 
+      blogs.map((blog) => (
         <BlogCard 
-        title={blog.title}
-        description = {blog.description}
-        image={blog.image}
-        username={blog.user.username}
+        id={blog?._id}
+        isUser={localStorage.getItem("userId") === blog?.user?._id}
+        title={blog?.title}
+        description = {blog?.description}
+        image={blog?.image}
+        username={blog?.user?.username}
         time={blog.createdAt}
         />
       ))}    
