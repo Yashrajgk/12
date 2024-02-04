@@ -15,23 +15,27 @@ const Register = () => {
   const handleChange = (e) => {
     setInputs(prevState => ({
       ...prevState,
-      [e.target.name]:e.target.value
+      [e.target.name]:e.target.value,
     }))
   }
 
   //form handle
-  const handleSubmit = async(e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const {data} =  await axios.post('/api/v1/auth/register', {name:inputs.name,email:inputs.email,password:inputs.password})
-      if(data.success){
-        alert('User Register Successfully')
-        navigate('/login')
+      const { data } = await axios.post("/api/v1/user/register", {
+        username: inputs.name,
+        email: inputs.email,
+        password: inputs.password,
+      });
+      if (data.success) {
+        alert("User Register Successfully");
+        navigate("/login");
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   return (
     <>
     <form onSubmit={handleSubmit}>
