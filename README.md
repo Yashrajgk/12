@@ -1,1 +1,1 @@
-Start the server with : npm run server
+Start the server with : npm run dev
