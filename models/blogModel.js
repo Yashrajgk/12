@@ -14,6 +14,14 @@ const blogSchema = new mongoose.Schema(
             type: String,
             required: [true, "image is require"],
         },
+        like: {
+           type: Number,
+           default: 0,
+        },
+        comments: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Comment'
+        }],
         user: {
             type: mongoose.Types.ObjectId,
             ref: "User",
