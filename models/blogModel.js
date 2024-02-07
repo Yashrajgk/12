@@ -21,10 +21,10 @@ const blogSchema = new mongoose.Schema(
         comments: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Comment'
-        }],
+        }], 
         user: {
             type: mongoose.Types.ObjectId,
-            ref: "User",
+            ref: "User",  
             require: [true, "user id is required"],
         },
     },
