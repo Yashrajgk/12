@@ -8,6 +8,8 @@ const { getAllBlogsController,
     getBlogByIdController, 
     deleteBlogController,
     userBlogController,
+    likedBlogController,
+    commentBlogController,
  } = require('../controllers/blogController')
 
 
@@ -30,5 +32,11 @@ router.delete('/delete-blog/:id', deleteBlogController)
   
 //GET || user blog
 router.get("/user-blog/:id", userBlogController);
+
+//POST || liked blog
+router.post('/like-blog/:id', likedBlogController);
+
+//POST || comment blog
+router.post('/comment-blog/:id', commentBlogController);
 
 module.exports = router;
