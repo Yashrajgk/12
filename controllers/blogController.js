@@ -169,7 +169,8 @@ exports.userBlogController = async(req,res) => {
 
 // COMMENT BLOG
 exports.commentBlogController = async (req,res) => {
-    const 
+    const blogId = req.params.id;
+    const comment = req.body.comment;
     try {
         const { title, description , user } = req.body;
         //validation
@@ -181,9 +182,6 @@ exports.commentBlogController = async (req,res) => {
                 message: "unable to find user",
             });
         }
-
-        const blogId = req.params.id;
-        const comment = req.body.comment;
         const blog = await db.getBlogById(blogId);
 
         if (!blog) {
@@ -197,6 +195,7 @@ exports.commentBlogController = async (req,res) => {
         await db.updateBlog(blog);
 
         res.json({ message: 'Comment updated successfully', blog });
+        
     } catch (error) {
         console.log(error);
         return res.status(400).send({
