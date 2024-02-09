@@ -188,8 +188,14 @@ exports.commentBlogController = async (req,res) => {
             return res.status(404).json({ error: 'Blog not found' });
         }
 
-        // Update the comment field
-        blog.comment = comment;
+        // Check if the blog already has a comment
+        if (blog.comment) {
+            // If the blog already has a comment, update it
+            blog.comment = newComment;
+        } else {
+            // If the blog does not have a comment, add a new one
+            blog.comment = newComment;
+        }
 
         // Save the updated blog
         await db.updateBlog(blog);
