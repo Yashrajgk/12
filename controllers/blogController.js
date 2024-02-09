@@ -169,6 +169,7 @@ exports.userBlogController = async(req,res) => {
 
 // COMMENT BLOG
 exports.commentBlogController = async (req,res) => {
+    const 
     try {
         const { title, description , user } = req.body;
         //validation
@@ -181,19 +182,21 @@ exports.commentBlogController = async (req,res) => {
             });
         }
 
-        const newComment = new blogModel({ title, description, user });
-        const session = await mongoose.startSession();
-        session.startTransaction();
-        await newComment.save({ session });
-        exisitingUser.blogs.push(newComment);
-        await exisitingUser.save({ session });
-        await session.commitTransaction();
-        await newComment.save();
-        return res.status(201).send({
-            success: true,
-            message: "Comment Created!",
-            newBlog,
-        });
+        const blogId = req.params.id;
+        const comment = req.body.comment;
+        const blog = await db.getBlogById(blogId);
+
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+
+        // Update the comment field
+        blog.comment = comment;
+
+        // Save the updated blog
+        await db.updateBlog(blog);
+
+        res.json({ message: 'Comment updated successfully', blog });
     } catch (error) {
         console.log(error);
         return res.status(400).send({
@@ -204,34 +207,5 @@ exports.commentBlogController = async (req,res) => {
     }
 };
 //DELETE COMMENT
-exports.deleteBlogController = async (req,res) => {
-    const {commentId , blogId, id} = req.params;
-    
-    const userBlog = req.user.userBlog;
-    try{
-        const blog = await blogModel.findById(blogId);
-        if(!blog){
-            res.status(404).json({msg: "Blog not found"});
-        }
-        const commentIndex = blog.comments.findIndex(
-            (comment) => comment._id.toString() === commentId
-        );
-        if (commentIndex === -1) {
-            return res.status(404).json({ msg: "comment not found" });
-        }
-        if (blog.comments[commentIndex].user.toString() != userBlog) {
-            return res.status(403).json({ msg: "Not authorised to delete comment" });
-        }
-        blog.comments.splice(commentIndex,1);
-        await blog.save();
-        res.json({msg: "Deleted successfully"});
-    } catch (error) {
-        console.log(error)
-        return res.status(400).send({
-            success: false,
-            message: 'error in user blog',
-            error,
-        })
-    }
-};
+
  
