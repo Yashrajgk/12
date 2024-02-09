@@ -168,43 +168,23 @@ exports.userBlogController = async(req,res) => {
 };
 
 // COMMENT BLOG
-exports.commentBlogController = async (req,res) => {
-    const blogId = req.params.id;
-    const comment = req.body.comment;
-    try {
-        const { title, description , user } = req.body;
-        //validation
-        const exisitingUser = await userModel.findById(user);
-        //validaton
-        if (!exisitingUser) {
-            return res.status(404).send({
-                success: false,
-                message: "unable to find user",  
-            });
-        }
-        const blog = await db.getBlogById(blogId);
+exports.commentBlogController = async (req, res) => {
+        const userId = req.user.userId;
+        const commentcontent = req.body.content;
+        try {
+            const blog = await blogModel.findById(req.params.id);
+            if (!blog) {
+                res.status(400).json({ msg: "Blog not found" });
+            }
+            const existingcomment = blog.comments.find(
+                (comment) => comment.user.toString() === userId
+            );
+            if (existingcomment) {
+                return res.status(400).json({ msg: "User has commented already" });
+            }
+            blog.comments.push({ user: userId, content: commentcontent });
+            await blog.save();
 
-        if (!blog) {
-            return res.status(404).json({ error: 'Blog not found' });
-        }
-
-        // Update the comment field
-        blog.comment = comment;
-
-        // Save the updated blog
-        await db.updateBlog(blog);
-
-        res.json({ message: 'Comment updated successfully', blog });
-        
-    } catch (error) {
-        console.log(error);
-        return res.status(400).send({
-            success: false,
-            message: "Error While Commenting",
-            error,
-        });
-    }
-};
-//DELETE COMMENT
-
- 
+            res.json({ msg: "commentcontent added successfully" });
+        } catch (err) { }
+    };
