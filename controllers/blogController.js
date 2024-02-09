@@ -169,22 +169,22 @@ exports.userBlogController = async(req,res) => {
 
 // COMMENT BLOG
 exports.commentBlogController = async (req, res) => {
-        const userId = req.user.userId;
-        const commentcontent = req.body.content;
-        try {
-            const blog = await blogModel.findById(req.params.id);
-            if (!blog) {
-                res.status(400).json({ msg: "Blog not found" });  
-            }
-            const existingcomment = blog.comments.find(
-                (comment) => comment.user.toString() === userId
-            );
-            if (existingcomment) {
-                return res.status(400).json({ msg: "User has commented already" });
-            }
-            blog.comments.push({ user: userId, content: commentcontent });
-            await blog.save();
+    const id = req.params.id;
+    // get the comment text and record post id
+    const comment = new Comment({
+        text: req.body.comment,
+        post: id
+    })
+    // save comment
+    await comment.save();
+    // get this particular post
+    const blogRelated = await blog.findById(id);
+    // push the comment into the post.comments array
+    blogRelated.comments.push(comment);
+    // save and redirect...
+    await blogRelated.save(function (err) {
+        if (err) { console.log(err) }
+        res.redirect('/')
+    })
 
-            res.json({ msg: "commentcontent added successfully" });
-        } catch (err) { }
-    };
+}
