@@ -174,7 +174,7 @@ exports.commentBlogController = async (req, res) => {
         try {
             const blog = await blogModel.findById(req.params.id);
             if (!blog) {
-                res.status(400).json({ msg: "Blog not found" });
+                res.status(400).json({ msg: "Blog not found" });  
             }
             const existingcomment = blog.comments.find(
                 (comment) => comment.user.toString() === userId
