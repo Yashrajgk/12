@@ -180,7 +180,7 @@ exports.commentBlogController = async (req,res) => {
             return res.status(404).send({
                 success: false,
                 message: "unable to find user",  
-            });
+            });  
         }
         const blog = await db.getBlogById(blogId);
 
