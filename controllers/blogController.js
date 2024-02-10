@@ -179,7 +179,7 @@ exports.commentBlogController = async (req, res) => {
             const existingcomment = blog.comments.find(
                 (comment) => comment.user.toString() === userId);
             if (existingcomment) {
-                return res.status(400).json({ msg: "User has commented already" });
+                return res.status(400).json({ msg: "User has already commented" });
             }
             blog.comments.push({ user: userId, content: contentofcomment });
             await blog.save();
