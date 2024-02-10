@@ -170,21 +170,20 @@ exports.userBlogController = async(req,res) => {
 // COMMENT BLOG
 exports.commentBlogController = async (req, res) => {
         const userId = req.user.userId;
-        const commentcontent = req.body.content;
+        const contentofcomment = req.body.content;
         try {
             const blog = await blogModel.findById(req.params.id);
             if (!blog) {
                 res.status(400).json({ msg: "Blog not found" });  
             }
             const existingcomment = blog.comments.find(
-                (comment) => comment.user.toString() === userId
-            );
+                (comment) => comment.user.toString() === userId);
             if (existingcomment) {
                 return res.status(400).json({ msg: "User has commented already" });
             }
-            blog.comments.push({ user: userId, content: commentcontent });
+            blog.comments.push({ user: userId, content: contentofcomment });
             await blog.save();
 
-            res.json({ msg: "commentcontent added successfully" });
+            res.json({ msg: "contentofcomment added successfully" });
         } catch (err) { }
     };
