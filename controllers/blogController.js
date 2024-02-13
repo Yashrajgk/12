@@ -168,9 +168,11 @@ exports.userBlogController = async(req,res) => {
 };
 
 // COMMENT BLOG
-exports.commentBlogController = async (req,res) => {
+exports.commentBlogController = async (req, res) => {
+    const blogId = req.params.id;
+    const comment = req.body.comment;
     try {
-        const { title, description , user } = req.body;
+        const { title, description, user } = req.body;
         //validation
         const exisitingUser = await userModel.findById(user);
         //validaton
@@ -180,20 +182,21 @@ exports.commentBlogController = async (req,res) => {
                 message: "unable to find user",
             });
         }
+        const blog = await blogModel.getBlogById(blogId);
+        console.log(blog)
 
-        const newComment = new blogModel({ title, description, user });
-        const session = await mongoose.startSession();
-        session.startTransaction();
-        await newComment.save({ session });
-        exisitingUser.blogs.push(newComment);
-        await exisitingUser.save({ session });
-        await session.commitTransaction();
-        await newComment.save();
-        return res.status(201).send({
-            success: true,
-            message: "Comment Created!",
-            newBlog,
-        });
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+
+        // Update the comment field
+        blog.comment = comment;
+
+        // Save the updated blog
+        await db.updateBlog(blog);
+
+        res.json({ message: 'Comment updated successfully', blog });
+
     } catch (error) {
         console.log(error);
         return res.status(400).send({
@@ -204,3 +207,4 @@ exports.commentBlogController = async (req,res) => {
     }
 };
 //DELETE COMMENT
+
