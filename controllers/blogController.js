@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const blogModel = require('../models/blogModel')
 const userModel = require('../models/userModel')
+const db = require('../config/db')
 
 //GET ALL BLOGS
 exports.getAllBlogsController = async(req,res) => {
@@ -168,43 +169,54 @@ exports.userBlogController = async(req,res) => {
 };
 
 // COMMENT BLOG
+const userModel = require('../models/userModel');
+const blogModel = require('../models/blogModel');
+const db = require('../config/db')
+
 exports.commentBlogController = async (req, res) => {
-    const blogId = req.params.id;
-    const comment = req.body.comment;
     try {
-        const { title, description, user } = req.body;
-        //validation
+        const blogId = req.params.id;
+        const { comment, user } = req.body;
+
+        // Check if the user exists
         const exisitingUser = await userModel.findById(user);
-        //validaton
         if (!exisitingUser) {
-            return res.status(404).send({
+            return res.status(404).json({
                 success: false,
-                message: "unable to find user",
+                message: "User not found",
             });
         }
-        const blog = await blogModel.getBlogById(blogId);
-        console.log(blog)
 
-        if (!blog) {
-            return res.status(404).json({ error: 'Blog not found' });
+        // Check if the blog exists
+        const exisitingBlog = await blogModel.getBlogById(blogId);
+        if (!exisitingBlog) {
+            return res.status(404).json({
+                success: false,
+                message: "Blog not found",
+            });
         }
 
-        // Update the comment field
-        blog.comment = comment;
+        // Add the comment to the blog
+        exisitingBlog.comments.push({
+            user: user,
+            comment: comment
+        });
 
         // Save the updated blog
-        await db.updateBlog(blog);
+        await db.updateBlog(exisitingBlog);
 
-        res.json({ message: 'Comment updated successfully', blog });
+        res.status(201).json({
+            success: true,
+            message: 'Comment added successfully',
+            blog: existingBlog
+        });
 
     } catch (error) {
-        console.log(error);
-        return res.status(400).send({
+        console.error(error);
+        res.status(500).json({
             success: false,
-            message: "Error While Commenting",
-            error,
+            message: "Internal Server Error",
+            error: error.message
         });
     }
 };
-//DELETE COMMENT
-

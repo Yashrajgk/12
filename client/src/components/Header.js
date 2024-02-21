@@ -37,7 +37,7 @@ const Header = () => {
     <>
       <AppBar position="sticky">
         <Toolbar>
-          <Typography variant="h4" >Hub Spot</Typography>
+          <Typography variant="h4" >Blog</Typography>
           {isLogin && (
             <Box display={"flex"} marginLeft="auto" marginRight={"auto"}>
               <Tabs
