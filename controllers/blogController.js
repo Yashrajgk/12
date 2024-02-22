@@ -169,17 +169,13 @@ exports.userBlogController = async(req,res) => {
 };
 
 // COMMENT BLOG
-const userModel = require('../models/userModel');
-const blogModel = require('../models/blogModel');
-const db = require('../config/db')
-
 exports.commentBlogController = async (req, res) => {
     try {
-        const blogId = req.params.id;
-        const { comment, user } = req.body;
+        const userId = req.params.id;
+        const { title, description } = req.body;
 
         // Check if the user exists
-        const exisitingUser = await userModel.findById(user);
+        const exisitingUser = await userModel.findById(userId);
         if (!exisitingUser) {
             return res.status(404).json({
                 success: false,
@@ -187,23 +183,26 @@ exports.commentBlogController = async (req, res) => {
             });
         }
 
-        // Check if the blog exists
-        const exisitingBlog = await blogModel.getBlogById(blogId);
-        if (!exisitingBlog) {
-            return res.status(404).json({
-                success: false,
-                message: "Blog not found",
+        const blogId = req.params.blogId;
+
+        const existingBlog = await blogModel.findById(blogId);
+        if (!existingBlog) {
+            const blog = await blogModel.create({
+                title,
+                description,
+                user: userId,
+                comments: [{user: userId, content: 'Content'}]
+            });
+            res.status(201).json({
+                success: true,
+                message: 'Comment Blog added successfully',
+                blog
             });
         }
+        
+        existingBlog.comments.push({user: userId, content: 'Content'});
 
-        // Add the comment to the blog
-        exisitingBlog.comments.push({
-            user: user,
-            comment: comment
-        });
-
-        // Save the updated blog
-        await db.updateBlog(exisitingBlog);
+        existingBlog.save();
 
         res.status(201).json({
             success: true,

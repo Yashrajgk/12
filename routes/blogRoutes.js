@@ -34,9 +34,9 @@ router.delete('/delete-blog/:id', deleteBlogController)
 router.get("/user-blog/:id", userBlogController);
 
 //POST || liked blog
-router.post('/like-blog/:id', likedBlogController);
+router.post('/like-blog/:id', () => {return ;});
 
 //POST || comment blog
-router.post('/comment-blog/:id', commentBlogController);
+router.post('/comment-blog/:id/:blogId', commentBlogController);  
 
 module.exports = router;
